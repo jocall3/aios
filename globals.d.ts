@@ -12,10 +12,17 @@
  * @license SPDX-License-Identifier: Apache-2.0
  */
 
+// Fix: Add dummy interfaces for experimental/non-standard APIs to satisfy TS
+interface NetworkInformation {}
+interface USB {}
+interface HID {}
+interface Serial {}
+
 declare global {
 
     // --- NODE.JS ENVIRONMENT GLOBALS (Provided by Vite/Bundlers) ---
-    const process: {
+    // Fix: Changed 'const' to 'var' to avoid redeclaration error in global scope.
+    var process: {
         env: {
             NODE_ENV: 'development' | 'production';
             GEMINI_API_KEY?: string;
@@ -33,19 +40,20 @@ declare global {
 
     // --- BROWSER APIs: Complete Window & Navigator Interfaces ---
     interface Window {
-        // Standard
-        readonly document: Document;
-        readonly navigator: Navigator;
-        readonly location: Location;
-        readonly history: History;
-        readonly localStorage: Storage;
-        readonly sessionStorage: Storage;
-        readonly performance: Performance;
-        readonly crypto: Crypto;
+        // Fix: Removed multiple redundant declarations that conflict with built-in TS DOM types.
+        // Standard properties are already available on the global Window type.
+        // readonly document: Document;
+        // readonly navigator: Navigator;
+        // readonly location: Location;
+        // readonly history: History;
+        // readonly localStorage: Storage;
+        // readonly sessionStorage: Storage;
+        // readonly performance: Performance;
+        // readonly crypto: Crypto;
         
         // Audio / Visual
-        readonly visualViewport?: VisualViewport;
-        speechSynthesis: SpeechSynthesis;
+        // readonly visualViewport?: VisualViewport;
+        // speechSynthesis: SpeechSynthesis;
         AudioContext: typeof AudioContext;
         webkitAudioContext: typeof AudioContext;
         
@@ -59,16 +67,17 @@ declare global {
     }
     
     interface Navigator {
-        // Standard
-        readonly userAgent: string;
-        readonly language: string;
-        readonly languages: readonly string[];
+        // Fix: Removed multiple redundant declarations that conflict with built-in TS DOM types.
+        // Standard properties are already available on the global Navigator type.
+        // readonly userAgent: string;
+        // readonly language: string;
+        // readonly languages: readonly string[];
         readonly connection: NetworkInformation;
         
         // Permissions API
-        permissions: {
-            query(permissionDesc: { name: 'geolocation' | 'notifications' | 'camera' | 'microphone' | 'persistent-storage' }): Promise<PermissionStatus>;
-        };
+        // permissions: {
+        //     query(permissionDesc: { name: 'geolocation' | 'notifications' | 'camera' | 'microphone' | 'persistent-storage' }): Promise<PermissionStatus>;
+        // };
 
         // Hardware APIs
         readonly usb: USB;
@@ -76,13 +85,13 @@ declare global {
         readonly serial: Serial;
         
         // Media
-        mediaDevices: MediaDevices;
+        // mediaDevices: MediaDevices;
         
         // Clipboard
-        clipboard: {
-            writeText(text: string): Promise<void>;
-            readText(): Promise<string>;
-        };
+        // clipboard: {
+        //     writeText(text: string): Promise<void>;
+        //     readText(): Promise<string>;
+        // };
     }
     
 

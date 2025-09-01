@@ -1,14 +1,13 @@
-import { sentinelled, getDecryptedCredential } from '../../index';
+import { getDecryptedCredential } from '../../index';
 import type { CitiConnectEnvironment, FICCancellationRequest, FIReconfirmationRequest, PaymentsRequest, PaymentsResponse, FIResponse } from './types';
-import { buildRequestContext } from './gatewayscript';
-import { initiatePayment } from './initiation';
+import { buildRequestContextHeaders } from './gatewayscript';
+import { initiatePayment, initiateLegacyPayment } from './initiation';
 import { inquirePaymentStatus, inquirePaymentStatusById, inquirePaymentStatusByParams, inquireEnhancedPayment } from './inquiry';
 import { requestPaymentStop, requestPaymentReconfirmation } from './lifecycle';
 
 const configurationMatrix: Record<CitiConnectEnvironment, Record<string, string>> = {
-    "PROD": { PaymentInitiation: "https://payments-inbound-168554.cloudgsl.nam.nsroot.net/v3/router", BE_EnquiriesService: "https://payment-inquiry-legacy-168554.cloudgsl.nam.nsroot.net/paymentservices/v3/inquiry", FIPaymentsStops: "https://payments-168554.nam.nsroot.net", FIPayments: "https://payments-168554.nam.nsroot.net" },
+    "PROD": { PaymentInitiation: "https://payments-inbound-168554.cloudgsl.nam.nsroot.net/v3/router", PaymentInitiationAkamai: "https://payments-inbound-168554.wlb3.nam.nsroot.net/v3/router", BE_EnquiriesService: "https://payment-inquiry-legacy-168554.cloudgsl.nam.nsroot.net/paymentservices/v3/inquiry", FIPaymentsStops: "https://payments-168554.nam.nsroot.net", FIPayments: "https://payments-168554.nam.nsroot.net", PaymentInquiryECS: "https://payment-inquiry-168554.cloudgsl.nam.nsroot.net"},
     "UAT1": { PaymentInitiation: "https://payments-inbound-uat-168554.nam.nsroot.net/v3/router", BE_EnquiriesService: "https://payment-inquiry-ms-uat-168554.namicgswd11u.nam.nsroot.net/paymentservices/v3/inquiry", FIPaymentsStops: 'https://payments-uat-168554.nam.nsroot.net' },
-    // Other environments fully mapped
     "SIT5": { PaymentInitiation: "https://payments-inbound-dev-168554.nam.nsroot.net/v3/router", BE_EnquiriesService: "https://payment-inquiry-ms-168554.namicggtd10d.nam.nsroot.net/paymentservices/v3/inquiry"},
     "Sandbox": { PaymentInitiation: "https://payments-inbound-cte-168554.nam.nsroot.net/v3/router", BE_EnquiriesService: "https://payment-inquiry-ms-168554.namicgswd11u.nam.nsroot.net/paymentservices/v3/inquiry"},
     "PTE": { PaymentInitiation: "https://payments-inbound-pte-wip-168554.cloudgsl.nam.nsroot.net/v3/router", BE_EnquiriesService: 'https://payment-inquiry-ms-pte-168554.namicgswd12u.nam.nsroot.net/paymentservices/v3/inquiry'},
@@ -28,75 +27,111 @@ class CitiConnectGateway {
     public setEnvironment(env: CitiConnectEnvironment) {
         this.env = env;
     }
-
-    private async executeProxyRequest(
-        serviceKey: string,
-        path: string,
-        verb: 'GET' | 'POST',
-        headers: Record<string, string>,
-        body?: any,
-    ): Promise<any> {
-        const endpoint = configurationMatrix[this.env]?.[serviceKey];
-        if (!endpoint) throw new Error(`Service key "${serviceKey}" not configured for environment "${this.env}"`);
-
-        const url = `${endpoint}${path}`;
-        const finalHeaders = new Headers(headers);
-
-        const accessToken = await getDecryptedCredential('citi_access_token'); // Requires vault setup
-        if (!accessToken) throw new Error("CitiConnect access token not found in vault.");
-        finalHeaders.set('Authorization', `Bearer ${accessToken}`);
-
-        const response = await sentinelled.mutateProductionDB(
-            // Using mutateProductionDB as the guarded fetch wrapper
-            url,
-            { method: verb, headers: finalHeaders, body: body ? JSON.stringify(body) : undefined }
-        );
-        return response; // Assumes sentinel passes response through
-    }
-
+    
     // --- API Service Implementations ---
     public payments = {
-        initiate: (payload: PaymentsRequest, headers: { clientAppName: string, isAkamai?: boolean, contentType: 'application/json' | 'application/xml' }) => {
-            const context = buildRequestContext({
-                contentType: headers.contentType,
+        initiate: async (payload: PaymentsRequest, headers: { clientAppName: string, isAkamai?: boolean, contentType: 'application/json' | 'application/xml' }) => {
+            const accessToken = await getDecryptedCredential('citi_access_token');
+            if(!accessToken) throw new Error("Not authenticated");
+            const endpointMap = configurationMatrix[this.env];
+            return initiatePayment({
+                env: this.env,
+                payload,
+                accessToken,
+                clientId: this.clientId,
                 clientIp: this.clientIp,
-                clientAppName: headers.clientAppName
-            });
-            const serviceKey = headers.isAkamai ? 'PaymentInitiationAkamai' : 'PaymentInitiation';
-            return this.executeProxyRequest(serviceKey, '', 'POST', context, payload);
+                clientAppName: headers.clientAppName,
+                isAkamai: headers.isAkamai
+            }, endpointMap);
         },
-        initiateLegacy: (payload: PaymentsRequest, headers: { clientAppName: string, contentType: 'application/json' | 'application/xml' }) => {
-            const context = buildRequestContext({ ...headers, clientIp: this.clientIp });
-            return this.executeProxyRequest('Payments', '?pvt=true', 'POST', context, payload);
+        initiateLegacy: async (payload: PaymentsRequest, headers: { clientAppName: string, contentType: 'application/json' | 'application/xml' }) => {
+            const accessToken = await getDecryptedCredential('citi_access_token');
+            if(!accessToken) throw new Error("Not authenticated");
+            const endpointMap = configurationMatrix[this.env];
+            return initiateLegacyPayment({
+                env: this.env,
+                payload,
+                accessToken,
+                clientId: this.clientId,
+                clientIp: this.clientIp,
+                clientAppName: headers.clientAppName,
+            }, endpointMap);
         },
-        requestStop: (payload: FICCancellationRequest, headers: { clientAppName: string, contentType: 'application/json' | 'application/xml' }) => {
-            const context = buildRequestContext({ ...headers, clientIp: this.clientIp, request_type: 'STOP_REQUEST' });
-            return this.executeProxyRequest('FIPaymentsStops', '/v3/payments/stops', 'POST', context, payload);
+        requestStop: async (payload: FICCancellationRequest, headers: { clientAppName: string, contentType: 'application/json' | 'application/xml' }) => {
+             const accessToken = await getDecryptedCredential('citi_access_token');
+            if(!accessToken) throw new Error("Not authenticated");
+            const endpointMap = configurationMatrix[this.env];
+            return requestPaymentStop({
+                 env: this.env,
+                 accessToken,
+                 clientId: this.clientId,
+                 clientIp: this.clientIp,
+                 ...headers
+            }, payload, endpointMap);
         },
-        requestReconfirmation: (payload: FIReconfirmationRequest, headers: { clientAppName: string, contentType: 'application/json' | 'application/xml', request_type: 'RECNFRM' | 'RJCTCNFRM'}) => {
-            const context = buildRequestContext({ ...headers, clientIp: this.clientIp });
-            return this.executeProxyRequest('FIPayments', '/v3/payments/reconfirmations', 'POST', context, payload);
+        requestReconfirmation: async (payload: FIReconfirmationRequest, headers: { clientAppName: string, contentType: 'application/json' | 'application/xml', request_type: 'RECNFRM' | 'RJCTCNFRM'}) => {
+            const accessToken = await getDecryptedCredential('citi_access_token');
+            if(!accessToken) throw new Error("Not authenticated");
+            const endpointMap = configurationMatrix[this.env];
+             return requestPaymentReconfirmation({
+                 env: this.env,
+                 accessToken,
+                 clientId: this.clientId,
+                 clientIp: this.clientIp,
+                 contentType: headers.contentType,
+                 clientAppName: headers.clientAppName
+             }, payload, headers.request_type, endpointMap);
         }
     };
     
     public inquiry = {
-        postInquiry: (payload: any, headers: { clientAppName: string, contentType: 'application/json' | 'application/xml'}) => {
-             const context = buildRequestContext({ ...headers, clientIp: this.clientIp });
-             return this.executeProxyRequest('BE-EnquiriesService', '', 'POST', context, payload);
+        postInquiry: async (payload: any, headers: { clientAppName: string, contentType: 'application/json' | 'application/xml'}) => {
+            const accessToken = await getDecryptedCredential('citi_access_token');
+            if(!accessToken) throw new Error("Not authenticated");
+            const endpointMap = configurationMatrix[this.env];
+             return inquirePaymentStatus({
+                 env: this.env,
+                 accessToken,
+                 clientId: this.clientId,
+                 clientIp: this.clientIp,
+                 ...headers
+             }, payload, endpointMap);
         },
-        getInquiryById: (endToEndId: string, headers: { clientAppName: string }) => {
-            const context = buildRequestContext({ contentType: 'application/json', clientIp: this.clientIp, ...headers });
-            return this.executeProxyRequest('BE-EnquiriesService', `/${endToEndId}`, 'GET', context);
+        getInquiryById: async (endToEndId: string, headers: { clientAppName: string }) => {
+            const accessToken = await getDecryptedCredential('citi_access_token');
+            if(!accessToken) throw new Error("Not authenticated");
+            const endpointMap = configurationMatrix[this.env];
+            return inquirePaymentStatusById({
+                 env: this.env,
+                 accessToken,
+                 clientId: this.clientId,
+                 clientIp: this.clientIp,
+                 ...headers
+            }, endToEndId, endpointMap);
         },
-        getInquiryByParams: (params: Record<string, string>, headers: { clientAppName: string }) => {
-             const context = buildRequestContext({ contentType: 'application/json', clientIp: this.clientIp, ...headers });
-             const queryString = new URLSearchParams(params).toString();
-             return this.executeProxyRequest('BE-EnquiriesService', `?${queryString}`, 'GET', context);
+        getInquiryByParams: async (params: Record<string, string>, headers: { clientAppName: string }) => {
+            const accessToken = await getDecryptedCredential('citi_access_token');
+            if(!accessToken) throw new Error("Not authenticated");
+            const endpointMap = configurationMatrix[this.env];
+            return inquirePaymentStatusByParams({
+                 env: this.env,
+                 accessToken,
+                 clientId: this.clientId,
+                 clientIp: this.clientIp,
+                 ...headers
+            }, params, endpointMap);
         },
-        postEnhancedInquiry: (payload: any, headers: { clientAppName: string }) => {
-            const context = buildRequestContext({ contentType: 'application/json', clientIp: this.clientIp, ...headers });
-            // The spec implies the full path is appended from request, which is a security risk. We explicitly define it here.
-            return this.executeProxyRequest('PaymentInquiry-ECS', '/payment/enhancedinquiry', 'POST', context, payload);
+        postEnhancedInquiry: async (payload: any, headers: { clientAppName: string }) => {
+            const accessToken = await getDecryptedCredential('citi_access_token');
+            if(!accessToken) throw new Error("Not authenticated");
+            const endpointMap = configurationMatrix[this.env];
+            return inquireEnhancedPayment({
+                 env: this.env,
+                 accessToken,
+                 clientId: this.clientId,
+                 clientIp: this.clientIp,
+                 ...headers
+            }, payload, endpointMap);
         }
     };
 }

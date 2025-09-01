@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { initializeOctokit, Octokit } from 'octokit'; // Conceptual AWS/Azure clients would exist
 import { getDecryptedCredential } from './vaultService';
 import { ensureGapiClient } from './googleApiService';
 import { logEvent, logError, measurePerformance } from './telemetryService';

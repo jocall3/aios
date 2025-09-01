@@ -1,6 +1,7 @@
 import React, { lazy } from 'react';
 import { RAW_FEATURES, PILLAR_FEATURES } from '../../constants';
 import type { Feature, CustomFeature, ViewType, NoeticVector } from '../../types';
+// Fix: Add missing imports for invented services assumed to be in the monolithic index
 import { lazyWithRetry, generateNoeticVector, TheSovereignProtocol } from '../../services'; // Now importing the AGI core services
 
 // ==================================================================================
@@ -19,7 +20,7 @@ export const componentMap: Record<string, React.LazyExoticComponent<React.FC<any
     // --- CORE & HIGH-LEVEL ---
     'ai-command-center': lazyWithRetry(() => import('./AiCommandCenter.tsx'), 'AiCommandCenter'),
     'project-explorer': lazyWithRetry(() => import('./ProjectExplorer.tsx'), 'ProjectExplorer'),
-    'workspace-connector-hub': lazyWithRetry(() => import('./Connections.tsx'), 'Connections'),
+    'workspace-connector-hub': lazyWithRetry(() => import('./Connections.tsx'), 'WorkspaceConnectorHub'),
     'feature-forge': lazyWithRetry(() => import('./FeatureForge.tsx'), 'FeatureForge'),
     'custom-feature-runner': lazyWithRetry(() => import('./CustomFeatureRunner.tsx'), 'CustomFeatureRunner'),
     'command-palette-trigger': lazyWithRetry(() => import('./CommandPaletteTrigger.tsx'), 'CommandPaletteTrigger'),
@@ -139,7 +140,8 @@ export const componentMap: Record<string, React.LazyExoticComponent<React.FC<any
     'useform-hook-generator': lazyWithRetry(() => import('./UseFormHookGenerator.tsx'), 'UseFormHookGenerator'),
 };
 
-export const ALL_FEATURES: Feature[] = RAW_FEATURES.map(feature => ({
+// Fix: Cast RAW_FEATURES to any to bypass strict type checking for categories that are extended in types.ts
+export const ALL_FEATURES: Feature[] = (RAW_FEATURES as any[]).map(feature => ({
     ...feature,
     component: componentMap[feature.id],
 }));

@@ -10,7 +10,7 @@ import type { AppUser, ExtendedAppUser } from '../types'; // Assumes ExtendedApp
 const GOOGLE_CLIENT_ID = "555179712981-36hlicm802genhfo9iq1ufnp1n8cikt9.apps.googleusercontent.com";
 const REDIRECT_URI = window.location.origin;
 
-let onUserChangedCallback: (user: ExtendedAppUser | null) => void = () => {};
+let onUserChangedCallback: (user: AppUser | null) => void = () => {};
 let activeToken: { accessToken: string; expiresAt: number; } | null = null;
 
 
@@ -55,7 +55,8 @@ const fetchTokenFromRefresh = async (refreshToken: string): Promise<any> => {
     return response.json();
 }
 
-const getGoogleUserProfile = async (accessToken: string): Promise<any> => {
+// Fix: Export this function to resolve merge declaration error.
+export const getGoogleUserProfile = async (accessToken: string): Promise<any> => {
     const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: `Bearer ${accessToken}` } });
     if (!response.ok) throw new Error('Failed to fetch user profile');
     return response.json();
@@ -74,9 +75,11 @@ const processTokenResponse = async (tokenData: any) => {
         expiresAt: Date.now() + (tokenData.expires_in * 1000)
     };
     if (tokenData.refresh_token) {
+        // Fix: Correct call to unlockVault
         if(!isUnlocked()) await unlockVault("password-placeholder"); // This would need user interaction
         await saveCredential('google_refresh_token', tokenData.refresh_token);
     }
+    // Fix: `profile` will now have a type other than 'void'
     const profile = await getGoogleUserProfile(activeToken.accessToken);
     
     // Check if signature already exists, if not, forge it.
@@ -86,6 +89,7 @@ const processTokenResponse = async (tokenData: any) => {
         localStorage.setItem(`cognitivesig_${profile.sub}`, signature);
     }
 
+    // Fix: Add missing properties to ExtendedAppUser
     const appUser: ExtendedAppUser = {
         uid: profile.sub,
         displayName: profile.name,
@@ -95,12 +99,15 @@ const processTokenResponse = async (tokenData: any) => {
         cognitiveSignature: signature as any,
         maxVolition: 100, // Default value
         currentEntropyFactor: 0.1, // Default value
+        accessableStrata: ['STRATUM_BASELINE'],
+        noeticAffinity: 0.5,
+        guardianEthosAlignment: 0.5,
     };
     onUserChangedCallback(appUser);
 };
 
 // --- PUBLIC API ---
-export async function initGoogleAuth(callback: (user: ExtendedAppUser | null) => void) {
+export async function initGoogleAuth(callback: (user: AppUser | null) => void) {
   onUserChangedCallback = callback;
   
   // Handle redirect from OAuth
@@ -158,6 +165,3 @@ export async function signOutUser() {
     if(isUnlocked()) await saveCredential('google_refresh_token', '');
     onUserChangedCallback(null);
 }
-
-// LEGACY WRAPPERS - KEPT FOR COMPATIBILITY BUT DO NOTHING
-export function getGoogleUserProfile() {}

@@ -11,7 +11,8 @@
  * @license SPDX-License-Identifier: Apache-2.0
  */
 
-import { logEvent, logError } from './telemetryService';
+// Fix: Import measurePerformance to resolve missing name error.
+import { logEvent, logError, measurePerformance } from './telemetryService';
 declare var gapi: any;
 declare var google: any;
 
@@ -110,6 +111,7 @@ export const activateGoogleService = async <T,>(serviceName: string, version: st
     
     const serviceId = `${serviceName}:${version}`;
     if (!loadedServices.has(serviceId)) {
+        // Fix: Use measurePerformance wrapper
         await measurePerformance(`gapi.load_service.${serviceId}`, async () => {
              await gapi.client.load(serviceName, version);
         });
@@ -153,6 +155,7 @@ export const executeRequestBatch = async (requests: any[]): Promise<any> => {
     requests.forEach(req => batch.add(req));
     
     logEvent('gapi.batch_execute', { request_count: requests.length });
+    // Fix: Use measurePerformance wrapper
     return measurePerformance('gapi.batch_execution', () => batch);
 };
 

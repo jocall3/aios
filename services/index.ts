@@ -19,8 +19,12 @@ import { configure as configureAxe, run as runAxe, AxeResults, ElementContext } 
 import { Type, FunctionDeclaration } from "@google/genai";
 import type { 
     GeneratedFile, EncryptedData, CustomFeature, FileNode, AppUser, GitHubUser, Repo,
-    StructuredPrSummary, StructuredExplanation, SemanticColorTheme, SecurityVulnerability, CodeSmell, FeatureTaxonomy
+    StructuredPrSummary, StructuredExplanation, SemanticColorTheme, SecurityVulnerability, CodeSmell,
+    PsychoEmotionalTarget, PsychometricTheme
 } from '../types';
+// Fix: Import FeatureTaxonomy from its actual location
+import type { FeatureTaxonomy } from './taxonomyService';
+
 
 declare var gapi: any;
 declare var google: any;
@@ -154,7 +158,23 @@ configureAxe({reporter:'v2',rules:[{id:'region',enabled:false}]});
 export const runAxeAudit = (context:ElementContext):Promise<AxeResults> => runAxe(context, {resultTypes: ['violations']});
 
 // --- security/staticAnalysisService.ts ---
-export const runStaticScan=(c:string):SecurityVulnerability[]>=>{const issues:any[]=[];const rules=[{name:'Hardcoded Secret',rx:/(key|secret|token|password)['"]?\s*[:=]\s*['"]([a-zA-Z0-9-_.]{16,})['"]/gi,s:'High'},{name:'dangerouslySetInnerHTML',rx:/dangerouslySetInnerHTML/g,s:'Medium'},{name:'eval() usage',rx:/eval\(/g,s:'High'}];c.split('\n').forEach((l,i)=>{rules.forEach(r=>{if(r.rx.test(l)){issues.push({line:i+1,type:r.name,severity:r.s});}});});return issues;};
+// Fix: Replaced malformed one-liner with a properly structured function to resolve parsing errors.
+export const runStaticScan = (c: string): any[] => {
+    const issues: any[] = [];
+    const rules = [
+        { name: 'Hardcoded Secret', rx: /(key|secret|token|password)['"]?\s*[:=]\s*['"]([a-zA-Z0-9-_.]{16,})['"]/gi, s: 'High' },
+        { name: 'dangerouslySetInnerHTML', rx: /dangerouslySetInnerHTML/g, s: 'Medium' },
+        { name: 'eval() usage', rx: /eval\(/g, s: 'High' }
+    ];
+    c.split('\n').forEach((l, i) => {
+        rules.forEach(r => {
+            if (r.rx.test(l)) {
+                issues.push({ line: i + 1, type: r.name, severity: r.s });
+            }
+        });
+    });
+    return issues;
+};
 
 // --- profiling/performanceService.ts ---
 export const startTracing=():void=>{if(isTracing)return;performance.clearMarks();performance.clearMeasures();isTracing=true;};
@@ -246,7 +266,7 @@ export const migrateCodeStream = (c: string, f: string, t: string) => streamCont
 export const analyzeConcurrencyStream = (c: string) => streamContent(`Analyze this JS code for concurrency issues (Web Workers):\n\`\`\`\n${c}\n\`\`\``, "You are an expert in JavaScript concurrency.");
 export const debugErrorStream = (e: Error) => streamContent(`Analyze and suggest fixes for this React error:\nMessage: ${e.message}\nStack: ${e.stack}`, "You are an expert at debugging React applications.");
 export const convertJsonToXbrlStream = (j: string) => streamContent(`Convert this JSON to XBRL-like XML:\n${j}`, "You are an expert in data formats who converts JSON to XBRL-like XML.");
-export const generateImage = async (p: string): Promise<string> => { const r=await _fetchFromProxy('/generateImages',{model:'imagen-3.0-generate-002',p,c:{n:1,o:'image/png'}}); return `data:image/png;base64,${r.generatedImages[0].image.imageBytes}`; };
+export const generateImage = async (p: string): Promise<string> => { const r=await _fetchFromProxy('/generateImages',{model:'imagen-4.0-generate-001',p,c:{n:1,o:'image/png'}}); return `data:image/png;base64,${r.generatedImages[0].image.imageBytes}`; };
 export const generatePrSummaryStructured = (d: string): Promise<StructuredPrSummary> => generateJson(`Summary for diff:\n${d}`, "You write excellent PR summaries.", {type:Type.OBJECT,properties:{title:{type:Type.STRING},summary:{type:Type.STRING},changes:{type:Type.ARRAY,items:{type:Type.STRING}}}});
 export const explainCodeStructured = (c: string): Promise<StructuredExplanation> => generateJson(`Analyze code:\n${c}`, "You are an expert software engineer.", {type:Type.OBJECT,properties:{summary:{type:Type.STRING},lineByLine:{type:Type.ARRAY,items:{type:Type.OBJECT,properties:{lines:{type:Type.STRING},explanation:{type:Type.STRING}}}},complexity:{type:Type.OBJECT,properties:{time:{type:Type.STRING},space:{type:Type.STRING}}},suggestions:{type:Type.ARRAY,items:{type:Type.STRING}}}});
 export const generateSemanticTheme = (p: any): Promise<SemanticColorTheme> => generateJson(p, "You are a world-class UI/UX designer.", {type:Type.OBJECT,properties:{mode:{type:Type.STRING,enum:["light","dark"]},palette:{type:Type.OBJECT,properties:{primary:{},secondary:{},accent:{},neutral:{}}},theme:{type:Type.OBJECT,properties:{background:{},surface:{},textPrimary:{},textSecondary:{},textOnPrimary:{},border:{}}},accessibility:{type:Type.OBJECT,properties:{primaryOnSurface:{},textPrimaryOnSurface:{},textSecondaryOnSurface:{},textOnPrimaryOnPrimary:{}}}}});
@@ -306,6 +326,47 @@ export const generateCspFromDescription = (d: string) => streamContent(`Generate
 export const analyzeRegexForRedosStream = (r: string) => streamContent(`Analyze regex for ReDoS vulnerabilities: \`${r}\``, "You are a security researcher specializing in ReDoS.");
 export const analyzePackageJsonStream = (p: string) => streamContent(`Based on training data, analyze this package.json for known vulnerabilities:\n${p}`, "You identify known vulnerabilities in software packages.");
 export const explainCorsError = (o: string, t: string, h: any) => streamContent(`Explain CORS error for Origin ${o} and Target ${t}`, "You are a web security expert.");
+
+// A mapping from abstract targets to concrete descriptive prompts for the AI.
+const targetPrompts: Record<PsychoEmotionalTarget, string> = {
+    'CALM_FOCUS': 'A calm, minimalist, and professional theme for deep work. Light and airy.',
+    'INHIBITED_CREATIVITY': 'A dark, moody, and unconventional theme that inspires creative, out-of-the-box thinking. Think cyberpunk noir.',
+    'AGGRESSIVE_EXECUTION': 'A high-contrast, sharp, and energetic dark theme for rapid decision-making and execution. Use bold, decisive colors.',
+    'DREAMLIKE_EXPLORATION': 'A soft, ethereal, and dreamlike theme with pastel colors and gentle gradients. For exploration and discovery.',
+    'ABSOLUTE_SECURITY': 'A theme that conveys trust, security, and stability. Use strong, stable colors like deep blues and greys. Think of a bank or a fortress.',
+};
+
+const adaptSemanticToPsychometric = (semantic: SemanticColorTheme, target: PsychoEmotionalTarget): PsychometricTheme => {
+    return {
+        targetState: target,
+        mode: semantic.mode,
+        visuals: {
+            primary: semantic.theme.primary.value,
+            background: semantic.theme.background.value,
+            surface: semantic.theme.surface.value,
+            textPrimary: semantic.theme.textPrimary.value,
+            textSecondary: semantic.theme.textSecondary.value,
+            textOnPrimary: semantic.theme.textOnPrimary.value,
+            border: semantic.theme.border.value,
+        },
+        // Synthesize some plausible audio/haptic defaults
+        audio: {
+            backgroundDrone: { frequency: target === 'CALM_FOCUS' ? 60 : 120, waveform: 'SINE', amplitude: 0.01 },
+            notificationChime: { frequency: target === 'ABSOLUTE_SECURITY' ? 880 : 440, waveform: 'SINE', amplitude: 0.1 },
+        },
+        haptics: {
+            idlePattern: `pattern(0, 1000)`,
+            confirmationPattern: `pattern(100)`,
+        }
+    };
+};
+
+export const generatePsychometricTheme = async (target: PsychoEmotionalTarget, userCognitiveSignature: string): Promise<PsychometricTheme> => {
+    const promptText = targetPrompts[target] || 'A professional user interface theme.';
+    const prompt = { parts: [{ text: promptText }] };
+    const semanticTheme = await generateSemanticTheme(prompt);
+    return adaptSemanticToPsychometric(semanticTheme, target);
+};
 
 //=============================================================================
 //== SECTION VI: LIVE/SIMULATED DATABASES AND PLAID                           ==

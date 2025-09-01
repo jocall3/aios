@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'eact';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { LockClosedIcon, ShieldCheckIcon, ShieldExclamationIcon } from '../icons';
 import { useNotification } from '../../contexts/NotificationContext';
 import { LoadingSpinner } from '../shared';
@@ -69,40 +69,4 @@ export const JwtInspector: React.FC = () => {
         <div className="h-full flex flex-col p-4 sm:p-6 lg:p-8 text-text-primary">
             <header className="mb-4">
                 <h1 className="text-3xl font-bold flex items-center"><LockClosedIcon /><span className="ml-3">JWT Cryptographic Verifier & Claims Adjudicator</span></h1>
-                <p className="text-text-secondary mt-1">Perform live cryptographic verification and claims adjudication of JSON Web Tokens.</p>
-            </header>
-            
-            <div className="flex-grow grid grid-cols-1 md:grid-cols-2 gap-6 min-h-0">
-                 <div className="flex flex-col gap-3 min-h-0">
-                     <h3 className="text-xl font-bold">Input Token & Secret</h3>
-                     <label className="text-sm">JWT</label>
-                     <textarea value={jwt} onChange={e => setJwt(e.target.value)} className="h-40 p-2 bg-surface border rounded font-mono text-xs"/>
-                      <label className="text-sm">HMAC Secret / Public Key</label>
-                     <input type="password" value={secret} onChange={e => setSecret(e.target.value)} className="w-full p-2 bg-surface border rounded font-mono text-sm"/>
-                 </div>
-                 
-                 <div className="flex flex-col gap-3 min-h-0">
-                    <div className="p-4 bg-surface border rounded-lg">
-                        <h3 className="text-xl font-bold">Adjudication Report</h3>
-                        <div className="mt-2 grid grid-cols-2 gap-2 text-center">
-                            <div className={`p-2 rounded font-bold flex items-center justify-center gap-2 ${isValid === true ? 'bg-green-800/50' : isValid === false ? 'bg-red-800/50' : 'bg-background'}`}>
-                                {isValid === true ? <ShieldCheckIcon/> : <ShieldExclamationIcon/>} {isValid === true ? 'SIGNATURE VERIFIED' : isValid === false ? 'SIGNATURE INVALID' : 'UNVERIFIED'}
-                            </div>
-                            <div className={`p-2 rounded font-bold ${isExpired ? 'bg-red-800/50' : 'bg-green-800/50'}`}>{isExpired ? 'EXPIRED' : 'ACTIVE'}</div>
-                        </div>
-                    </div>
-                     <div className="grid grid-rows-2 gap-3 flex-grow min-h-0">
-                         <div className="flex flex-col">
-                             <p className="font-bold mb-1">Header</p>
-                             <pre className="text-xs flex-grow bg-background border p-2 rounded">{decoded.error || JSON.stringify(decoded.header, null, 2)}</pre>
-                         </div>
-                         <div className="flex flex-col">
-                            <p className="font-bold mb-1">Payload</p>
-                             <pre className="text-xs flex-grow bg-background border p-2 rounded">{decoded.error || JSON.stringify(decoded.payload, null, 2)}</pre>
-                         </div>
-                    </div>
-                 </div>
-            </div>
-        </div>
-    );
-};
+                <p className="text-text-secondary mt-1">Perform live cryptographic verification and claims adjudication of JSON Web Tokens.</

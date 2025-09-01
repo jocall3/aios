@@ -1,3 +1,5 @@
+
+// Fix: Changed to type-only import and corrected path
 import type { GlobalState } from '../contexts/GlobalStateContext';
 import { FEATURE_TAXONOMY } from './taxonomyService';
 
@@ -161,7 +163,8 @@ class IntentClarionEngine {
 }
 
 // Export a singleton instance to maintain state across the application lifecycle.
-const IntentClarionCore = new IntentClarionEngine();
+// Fix: Export IntentClarionCore
+export const IntentClarionCore = new IntentClarionEngine();
 
 // Exported functions that interact with the core singleton.
 export const getPredictiveCommands = (): Promise<string[]> => {

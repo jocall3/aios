@@ -1,10 +1,10 @@
-import React, { useState, useCallback, useMemo } from 'eact';
+import React, { useState, useCallback, useMemo } from 'react';
 import * as Diff from 'diff';
 import { realignCodeIdeology } from '../../services/IdeologicalComputationAI'; // Invented, superior service
 import type { IdeologicalAlignmentReport } from '../../types/IdeologicalComputation'; // Invented type
 import { SparklesIcon } from '../icons';
-import { LoadingSpinner } from '../shared/LoadingSpinner';
-import { MarkdownRenderer } from '../shared/MarkdownRenderer';
+import { LoadingSpinner } from '../shared';
+import { MarkdownRenderer } from '../shared';
 
 const exampleCode = `
 class UserManager {

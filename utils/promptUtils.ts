@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { SystemPrompt, CognitiveSignature, SystemEntropyState } from '../types';
+import type { SystemPrompt, CognitiveSignature } from '../types';
+import { SystemEntropyState } from '../types';
 import { generateMoreExamples, compressPromptNoetically } from '../services/MetaPromptAI'; // Invented
 
 // Zero-width space, used for embedding semantic anchors.
@@ -43,7 +44,8 @@ const embedMalignantPromptShield = (promptText: string): string => {
 export const inoculateAndFrame = async (
     prompt: SystemPrompt,
     cognitiveSignature: CognitiveSignature,
-    systemEntropy: SystemEntropyState,
+    // Fix: Changed type to number to allow numeric operations like toFixed.
+    systemEntropy: number,
 ): Promise<string> => {
     if (!prompt) return "You are a helpful assistant.";
 

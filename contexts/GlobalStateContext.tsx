@@ -3,7 +3,7 @@ import type { ViewType, AppUser, GitHubUser, FileNode } from '../types.ts';
 import { simulationState } from '../services/simulationState.ts';
 
 // State shape
-interface GlobalState {
+export interface GlobalState {
   activeView: ViewType;
   viewProps: any;
   hiddenFeatures: string[];

@@ -206,23 +206,6 @@ export interface PaymentsErrorResponse {
 // --- Composite & Contextual Types ---
 
 /**
- * The full context required to build headers for any CitiConnect API call.
- * This object is the result of the reconstructed gatewayscript logic.
- */
-export interface CitiRequestContext {
-    Authorization: string; // Bearer token
-    'Content-Type': PaymentContentType;
-    client_id: string;
-    clientIpAddress: string;
-    sourceContent: 'json' | 'xml';
-    portalTraffic: 'Y' | 'N';
-    // Optional headers for specific operations
-    request_type?: 'STOP_REQUEST' | 'RECNFRM' | 'RJCTCNFRM';
-    'icg-akamai-b2b-flag'?: 'true';
-    'X-Request-ID'?: string; // Engine-injected tracing ID
-}
-
-/**
  * Defines the parameters for a `POST /payment/inquiry` call.
  */
 export interface PaymentInquiryPostPayload {

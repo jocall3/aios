@@ -20,6 +20,12 @@ import type {
 } from './types';
 import { buildRequestContextHeaders } from './gatewayscript';
 
+// Fix: Add placeholder for missing error response type
+interface StandardErrorResponse {
+    message?: string;
+    errors?: { issue: string }[];
+}
+
 /**
  * The core proxy function for this module, responsible for making the final fetch call.
  * This is an internal function not intended for direct use. It assumes the request

@@ -224,7 +224,8 @@ export const convertJsonToXbrlStream = (json: string) => streamContent(
 
 export const generateImage = async (prompt: string): Promise<string> => {
     const response = await fetchFromProxy('/generateImages', {
-        model: 'imagen-3.0-generate-002',
+        // Fix: Use a valid model name from the guidelines.
+        model: 'imagen-4.0-generate-001',
         prompt: prompt,
         config: { numberOfImages: 1, outputMimeType: 'image/png' },
     });

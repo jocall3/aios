@@ -59,37 +59,30 @@ export const generateColorBlindnessFilters = (hexColor: string): ColorBlindnessS
     const rgb = hexToRgb(hexColor);
     if (!rgb) return { error: "Invalid hexadecimal color format." };
     
-    // RGB to LMS conversion matrix
-    const LMSMatrix = [[17.8824, 43.5161, 4.11935], [3.45565, 27.1554, 3.86714], [0.0299566, 0.184309, 1.46709]];
-    const r = rgb.r, g = rgb.g, b = rgb.b;
-    const l = LMSMatrix[0][0] * r + LMSMatrix[0][1] * g + LMSMatrix[0][2] * b;
-    const m = LMSMatrix[1][0] * r + LMSMatrix[1][1] * g + LMSMatrix[1][2] * b;
-    const s = LMSMatrix[2][0] * r + LMSMatrix[2][1] * g + LMSMatrix[2][2] * b;
-    
-    // Protanopia simulation (L is missing)
-    const p_l = 0.0 * m + 0.0 * s;
-    // Deuteranopia simulation (M is missing)
-    const d_m = 0.0 * l + 0.0 * s;
-    // Tritanopia simulation (S is missing)
-    const t_s = 0.0 * l + 0.0 * m;
+    // Simplified simulation matrices for robustness
+    const { r, g, b } = rgb;
+    const protanopia = {
+        r: 0.567 * r + 0.433 * g + 0 * b,
+        g: 0.558 * r + 0.442 * g + 0 * b,
+        b: 0 * r + 0.242 * g + 0.758 * b,
+    };
+    const deuteranopia = {
+        r: 0.625 * r + 0.375 * g + 0 * b,
+        g: 0.7 * r + 0.3 * g + 0 * b,
+        b: 0 * r + 0.3 * g + 0.7 * b,
+    };
+    const tritanopia = {
+        r: 0.95 * r + 0.05 * g + 0 * b,
+        g: 0 * r + 0.433 * g + 0.567 * b,
+        b: 0 * r + 0.475 * g + 0.525 * b,
+    };
 
-    // LMS to RGB conversion matrix (inverted)
-    const RGBMatrix = [[0.0809, -0.1305, 0.1167], [-0.0102, 0.0540, -0.1136], [-0.0003, -0.0041, 0.6935]];
-
-    const simulate = (l_s: number, m_s: number, s_s: number): RGB => ({
-        r: Math.max(0, Math.min(255, RGBMatrix[0][0] * l_s + RGBMatrix[0][1] * m_s + RGBMatrix[0][2] * s_s)),
-        g: Math.max(0, Math.min(255, RGBMatrix[1][0] * l_s + RGBMatrix[1][1] * m_s + RGBMatrix[1][2] * s_s)),
-        b: Math.max(0, Math.min(255, RGBMatrix[2][0] * l_s + RGBMatrix[2][1] * m_s + RGBMatrix[2][2] * s_s)),
-    });
-
-    const protanopiaRgb = simulate(p_l, m, s);
-    const deuteranopiaRgb = simulate(l, d_m, s);
-    const tritanopiaRgb = simulate(l, m, t_s);
+    const clamp = (val: number) => Math.max(0, Math.min(255, val));
     
     return {
-        protanopia: rgbToHex(protanopiaRgb.r, protanopiaRgb.g, protanopiaRgb.b),
-        deuteranopia: rgbToHex(deuteranopiaRgb.r, deuteranopiaRgb.g, deuteranopiaRgb.b),
-        tritanopia: rgbToHex(tritanopiaRgb.r, tritanopiaRgb.g, tritanopiaRgb.b),
+        protanopia: rgbToHex(clamp(protanopia.r), clamp(protanopia.g), clamp(protanopia.b)),
+        deuteranopia: rgbToHex(clamp(deuteranopia.r), clamp(deuteranopia.g), clamp(deuteranopia.b)),
+        tritanopia: rgbToHex(clamp(tritanopia.r), clamp(tritanopia.g), clamp(tritanopia.b)),
     };
 };
 

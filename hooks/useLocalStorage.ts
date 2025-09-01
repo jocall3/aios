@@ -23,7 +23,8 @@ const calculateChecksum = (str: string): string => {
     for (let i = 0; i < str.length; i++ ) {
         crc = (crc >>> 8) ^ crc32Table[(crc ^ str.charCodeAt(i)) & 0xFF];
     }
-    return (crc ^ (-1)) >>> 0.toString(16).padStart(8, '0');
+    // Fix: Ensure the return type is a string as declared.
+    return ((crc ^ (-1)) >>> 0).toString(16).padStart(8, '0');
 };
 
 
@@ -93,53 +94,60 @@ export const useLocalStorage = <T,>(key: string, initialValue: T): readonly [T, 
                 return initialValue;
             }
             
-            // 4. Deserialize and update cache
-            const deserialized = deserialize(data);
-            cache.set(k, deserialized);
-            return deserialized;
-
+            const value = deserialize(data);
+            cache.set(k, value);
+            return value;
         } catch (error) {
-            console.error(`Error reading localStorage key “${k}”. Reverting to initial value.`, error);
+            console.warn(`Error reading localStorage key “${k}”:`, error);
             return initialValue;
         }
     });
 
     const [storedValue, setStoredValue] = useState<T>(() => initializer.current(key));
 
-    const setValue = useCallback((value: T | ((val: T) => T)) => {
-        try {
-            const valueToStore = value instanceof Function ? value(storedValue) : value;
-            setStoredValue(valueToStore);
-            cache.set(key, valueToStore);
-            
-            const consent = window.localStorage.getItem('devcore_ls_consent');
-            if (consent === 'granted') {
+    const setValue = useCallback(
+        (value: T | ((val: T) => T)) => {
+            try {
+                 const consent = window.localStorage.getItem('devcore_ls_consent');
+                 if (consent !== 'granted') {
+                    // Even if consent is not granted, we can still update the in-session state.
+                    const valueToStore = value instanceof Function ? value(storedValue) : value;
+                    setStoredValue(valueToStore);
+                    cache.set(key, valueToStore);
+                    return;
+                }
+
+                const valueToStore = value instanceof Function ? value(storedValue) : value;
+                setStoredValue(valueToStore);
+                cache.set(key, valueToStore);
+
                 const serializedData = serialize(valueToStore);
                 const checksum = calculateChecksum(serializedData);
                 const itemToStore = JSON.stringify({ data: serializedData, checksum });
+                
                 window.localStorage.setItem(key, itemToStore);
-
-                // Dispatch event for cross-tab sync
+                
+                // Dispatch storage event for cross-tab sync
                 window.dispatchEvent(new StorageEvent('storage', { key }));
+                
+            } catch (error) {
+                console.warn(`Error setting localStorage key “${key}”:`, error);
             }
-        } catch (error) {
-            console.error(`Error setting localStorage key “${key}”:`, error);
-        }
-    }, [key, storedValue]);
+        },
+        [key, storedValue]
+    );
 
     // Cross-tab synchronization listener
     useEffect(() => {
         const handleStorageChange = (event: StorageEvent) => {
-            // Only update if the key matches and the change didn't originate from this tab
             if (event.key === key) {
-                const newValue = initializer.current(key);
-                setStoredValue(newValue);
+                setStoredValue(initializer.current(key));
             }
         };
-
         window.addEventListener('storage', handleStorageChange);
         return () => window.removeEventListener('storage', handleStorageChange);
     }, [key]);
+
 
     return [storedValue, setValue] as const;
 };

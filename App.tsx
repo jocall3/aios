@@ -1,8 +1,18 @@
 
+
+
+
+
+
+
+
+
 import React, { Suspense, useCallback, useMemo, useState, useEffect } from 'react';
 import { ErrorBoundary } from './components/ErrorBoundary.tsx';
 import { useGlobalState } from './contexts/GlobalStateContext.tsx';
+// Fix: Import SystemEntropyState for WindowState
 import type { ViewType, AppUser, Feature, CustomFeature, FeatureCategory } from './types.ts';
+import { SystemEntropyState } from './types.ts';
 import { CommandPalette } from './components/CommandPalette.tsx';
 import { NotificationProvider } from './contexts/NotificationContext.tsx';
 import { useTheme } from './hooks/useTheme.ts';
@@ -69,6 +79,11 @@ interface WindowState {
   size: { width: number; height: number };
   zIndex: number;
   isMinimized: boolean;
+  // Fix: Add missing properties to align with ManifoldViewState
+  isMaximized: boolean;
+  temporalOffset: number;
+  cognitiveLoadFactor: number;
+  currentEntropyState: SystemEntropyState;
 }
 
 const Z_INDEX_BASE = 10;
@@ -133,6 +148,12 @@ const DesktopExperience: React.FC = () => {
                 zIndex: newZIndex,
                 isMinimized: false,
                 props,
+                // Fix: Add default values for new properties
+                isMaximized: false,
+                temporalOffset: 0,
+                cognitiveLoadFactor: 1,
+                // Fix: 'SystemEntropyState' can now be used as a value.
+                currentEntropyState: SystemEntropyState.COHERENT,
             };
             return { ...prev, [featureId]: newWindow };
         });
@@ -213,6 +234,7 @@ const DesktopExperience: React.FC = () => {
                         <Window
                             key={win.id}
                             feature={featureWithProps}
+                            // Fix: The 'state' prop expects ManifoldViewState. Our updated WindowState is now compatible.
                             state={win}
                             isActive={win.id === activeId}
                             onClose={() => closeWindow(win.id)}

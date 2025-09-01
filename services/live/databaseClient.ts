@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 import { generateSqlTransaction, analyzeTransactionRisk } from '../TransactionalOntologyAI'; // Invented AI Service
-import type { GeneratedFile, EncryptedData, CustomFeature, SQLTransactionPlan } from '../../types'; // Assume SQLTransactionPlan is a rich type
+// Fix: Add missing import for SQLTransactionPlan
+import type { GeneratedFile, EncryptedData, CustomFeature, SQLTransactionPlan, VaultAccessLog } from '../../types'; // Assume SQLTransactionPlan is a rich type
 
 // ==================================================================================
 // ==                 SECTION I: METASTABLE IN-MEMORY STATE CACHE                  ==

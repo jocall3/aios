@@ -34,7 +34,8 @@ const estimateParseTime = (byteSize: number): number => {
 
 // Simplified parser for Vite stats, enhanced to build a more complex node.
 const parseViteReport = (stats: any): ModuleQuantumNode => {
-    const root: ModuleQuantumNode = { name: 'root', cost: { rawSize: 0, gzippedSize: 0, parseTimeMs: 0, entropy: 0, legacyScore: 0}, children: [] };
+    // Fix: Corrected root node definition which does not have a `name` property.
+    const root: ModuleQuantumNode = { id: 'root', cost: { rawSize: 0, gzippedSize: 0, parseTimeMs: 0, entropy: 0, legacyScore: 0}, children: [] };
     
     if (stats.output) {
         Object.entries(stats.output).forEach(([path, chunk]: [string, any]) => {

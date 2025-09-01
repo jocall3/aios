@@ -1,4 +1,5 @@
-import { openDB, DBSchema } from 'idb';
+// Fix: Changed IDBDatabase to IDBPDatabase for generic type support
+import { openDB, DBSchema, IDBPDatabase } from 'idb';
 import type { ChrononTimestamp, CognitiveSignature, SystemEntropyState } from '../types';
 
 // --- SELF-CONTAINED TYPES FOR THIS MODULE ---
@@ -9,7 +10,8 @@ interface ChronicleEntry {
     timestamp: ChrononTimestamp;
     level: LogLevel;
     signature: CognitiveSignature;
-    entropy: SystemEntropyState;
+    // Fix: Changed type from enum to number to match usage
+    entropy: number;
     eventName: string;
     payload: Record<string, any>;
     causalEventId?: string; // Link to the preceding event
@@ -20,13 +22,14 @@ interface ChronicleDB extends DBSchema {
     'system-chronicle': {
         key: string;
         value: ChronicleEntry;
-        indexes: { 'by-timestamp': ChrononTimestamp; 'by-level': LogLevel; };
+        indexes: { 'by-timestamp': number; 'by-level': LogLevel; };
     };
 }
 
 // --- MODULE STATE AND CONFIGURATION ---
 const isTelemetryEnabled = true;
-let dbPromise: Promise<IDBDatabase<ChronicleDB>>;
+// Fix: Changed IDBDatabase to IDBPDatabase for generic type support
+let dbPromise: Promise<IDBPDatabase<ChronicleDB>>;
 const PII_REDACTION_REGEX = /"?(email|password|token|secret|key)"?\s*:\s*".*?"/gi;
 
 // --- DATABASE INITIALIZATION ---
@@ -97,8 +100,10 @@ export const logEvent = (
       eventName,
       payload: sanitizedPayload,
       causalEventId,
-      signature: 'sig_cognitron::active_user_placeholder', // Would be fetched from global state
-      entropy: 0.1, // Placeholder for SystemEntropyState
+      // Fix: Corrected CognitiveSignature type value
+      signature: 'sig_cognitron::active_user_placeholder', 
+      // Fix: Changed entropy to a number to match type
+      entropy: 0.1, 
   });
 
   console.log(`%c[EVENT]%c ${eventName}`, 'color: #84cc16; font-weight: bold;', 'color: inherit;', sanitizedPayload);
@@ -121,7 +126,9 @@ export const logError = (
       eventName: 'SystemError',
       payload: errorPayload,
       causalEventId,
+      // Fix: Corrected CognitiveSignature type value
       signature: 'sig_cognitron::active_user_placeholder',
+      // Fix: Changed entropy to a number to match type
       entropy: 0.8,
   });
 
@@ -150,7 +157,9 @@ export const measurePerformance = async <T>(
       payload: {},
       durationMs: duration,
       causalEventId,
+      // Fix: Corrected CognitiveSignature type value
       signature: 'sig_cognitron::active_user_placeholder',
+      // Fix: Changed entropy to a number to match type
       entropy: 0.1,
     });
     console.log(`%c[PERF]%c ${metricName}`, 'color: #3b82f6; font-weight: bold;', 'color: inherit;', { duration: `${duration.toFixed(2)}ms` });

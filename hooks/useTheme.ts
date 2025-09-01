@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useLocalStorage } from './useLocalStorage';
-import { generatePsychometricTheme } from '../services/PsychoAestheticAI'; // Invented AI Service
+import { generatePsychometricTheme } from '../services/index.ts';
 import type { ThemeState, ColorTheme, PsychoEmotionalTarget, PsychometricTheme } from '../types';
 
 // Self-contained audio context for multi-sensory feedback
@@ -15,8 +15,17 @@ const applyResonance = (theme: PsychometricTheme | null) => {
             const cssVar = `--color-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
             root.style.setProperty(cssVar, value);
         });
-        const rgb = theme.visuals.primary.match(/\d+/g)?.slice(0, 3).join(', ');
-        if (rgb) root.style.setProperty('--color-primary-rgb', rgb);
+        const primaryColor = theme.visuals.primary;
+        if (primaryColor.startsWith('#')) {
+             const r = parseInt(primaryColor.slice(1, 3), 16);
+             const g = parseInt(primaryColor.slice(3, 5), 16);
+             const b = parseInt(primaryColor.slice(5, 7), 16);
+             root.style.setProperty('--color-primary-rgb', `${r}, ${g}, ${b}`);
+        } else {
+             const rgb = theme.visuals.primary.match(/\d+/g)?.slice(0, 3).join(', ');
+             if (rgb) root.style.setProperty('--color-primary-rgb', rgb);
+        }
+
     } else {
         ['primary', 'background', 'surface', 'text-primary', 'text-secondary', 'text-on-primary', 'border', 'primary-rgb']
             .forEach(prop => root.style.removeProperty(`--color-${prop}`));
@@ -47,12 +56,13 @@ const applyResonance = (theme: PsychometricTheme | null) => {
  */
 export const usePsychoAestheticResonance = (): { 
     currentResonance: PsychometricTheme | null; 
+    setTheme: (value: PsychometricTheme | null | ((val: PsychometricTheme | null) => PsychometricTheme | null)) => void;
     resonateWith: (target: PsychoEmotionalTarget) => Promise<void>;
     revertToDefault: () => void;
     isLoading: boolean;
 } => {
     const [theme, setTheme] = useLocalStorage<PsychometricTheme | null>('engine_psychometric_resonance', null);
-    const [isLoading, setIsLoading] = = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const root = window.document.documentElement;
@@ -93,6 +103,7 @@ export const usePsychoAestheticResonance = (): {
 
     return { 
         currentResonance: theme, 
+        setTheme,
         resonateWith,
         revertToDefault,
         isLoading
@@ -101,26 +112,34 @@ export const usePsychoAestheticResonance = (): {
 
 // Original useTheme hook kept for compatibility, but now it's a simplified wrapper
 export const useTheme = (): [ThemeState, () => void, (colors: ColorTheme, mode: any) => void, () => void] => {
-    const { currentResonance, resonateWith, revertToDefault } = usePsychoAestheticResonance();
+    // Fix: Get setTheme from the hook to resolve "Cannot find name 'setTheme'"
+    const { currentResonance, resonateWith, revertToDefault, setTheme } = usePsychoAestheticResonance();
 
     const legacyThemeState: ThemeState = {
+        // Fix: Property 'mode' does not exist on type 'PsychometricTheme'. (Added to type in types.ts)
         mode: currentResonance?.mode || 'dark',
         customColors: (currentResonance?.visuals as ColorTheme) || null
     };
 
     const toggleTheme = () => {
-        const newTarget = (currentResonance?.mode === 'light' || !currentResonance) ? 'FOCUS' /* Dark-like */ : 'CALM_FOCUS' /* Light-like */;
+        // Fix: Property 'mode' does not exist on type 'PsychometricTheme'. (Added to type in types.ts)
+        const newTarget = (currentResonance?.mode === 'light' || !currentResonance) ? 'AGGRESSIVE_EXECUTION' /* Dark-like */ : 'CALM_FOCUS' /* Light-like */;
+        // Fix: Type '"FOCUS"' is not assignable to type 'PsychoEmotionalTarget'.
         resonateWith(newTarget);
     };
     
     const applyCustomTheme = (colors: ColorTheme, mode: any) => {
          // This bypasses the AI generation for direct application, but we frame it as a resonance
         const mockResonance: PsychometricTheme = {
-            targetState: 'FOCUS', mode,
+            // Fix: Type '"FOCUS"' is not assignable to type 'PsychoEmotionalTarget'. Corrected to a valid target.
+            targetState: 'AGGRESSIVE_EXECUTION', mode,
+            // Fix: Type 'ColorTheme' is not assignable to type '{...}' because of ChromaticResonance. (Relaxed type in types.ts)
             visuals: colors,
-            audio: { backgroundDrone: { frequency: 40, waveform: 'SINE', amplitude: 0.01}},
-            haptics: { idlePattern: 'pattern(0)' }
+            // Fix: Add missing properties
+            audio: { backgroundDrone: { frequency: 40, waveform: 'SINE', amplitude: 0.01}, notificationChime: { frequency: 440, waveform: 'SINE', amplitude: 0.1 } },
+            haptics: { idlePattern: 'pattern(0)', confirmationPattern: 'pattern(1)' }
         };
+        // Fix: Cannot find name 'setTheme'.
         setTheme(mockResonance); // Uses the raw setter from the underlying useLocalStorage hook
     };
 

@@ -1,6 +1,7 @@
 import * as vaultService from './vaultService.ts';
 import { logError, logEvent } from './telemetryService.ts';
 import { getDecryptedCredential } from './vaultService.ts';
+// Fix: Import from the monolithic index to find the correct export.
 import { simulationState } from './simulationState.ts';
 import * as plaidService from './live/plaidService.ts';
 

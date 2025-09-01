@@ -26,7 +26,8 @@ let psionicChannel: MessageChannel | null = null;
 
 
 // --- BI-DIRECTIONAL COMMAND PROTOCOL ---
-constsendCommandToAgent = <T>(command: {type: string, payload?: any}): Promise<T> => {
+// Fix: Corrected function name
+const sendCommandToAgent = <T>(command: {type: string, payload?: any}): Promise<T> => {
     return new Promise((resolve, reject) => {
         if (!navigator.serviceWorker.controller) {
             return reject(new Error("Psionic Interface Error: Reality Manifold agent is not active."));
@@ -108,6 +109,7 @@ export const isAgentActive = (): boolean => {
  * @param rules The array of intervention rules to apply.
  */
 export const task_setInterventionRules = (rules: InterventionRule[]): Promise<void> => {
+    // Fix: Corrected function name
     return sendCommandToAgent({ type: 'SET_INTERVENTION_RULES', payload: { rules } });
 };
 
@@ -117,6 +119,7 @@ export const task_setInterventionRules = (rules: InterventionRule[]): Promise<vo
  * @param options Configuration for Chaos Mode behavior.
  */
 export const task_enableChaosMode = (enabled: boolean, options?: { intensity?: number, target?: 'api'|'assets' }): Promise<void> => {
+    // Fix: Corrected function name
     return sendCommandToAgent({ type: 'TOGGLE_CHAOS_MODE', payload: { enabled, options }});
 };
 
@@ -136,5 +139,6 @@ export const hint_prefetchResource = (url: string): void => {
  * @returns A promise resolving with the agent's current state.
  */
 export const query_getAgentState = (): Promise<AgentState> => {
+    // Fix: Corrected function name
     return sendCommandToAgent({ type: 'GET_AGENT_STATE' });
 };

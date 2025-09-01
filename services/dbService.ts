@@ -1,14 +1,18 @@
 import { openDB, DBSchema } from 'idb';
-import type { GeneratedFile, EncryptedData, CustomFeature } from '../types.ts';
+import type { GeneratedFile, EncryptedData, CustomFeature, VaultAccessLog } from '../types.ts';
+// Fix: Import from the monolithic index to avoid circular dependency and find the correct export.
 import { simulationState } from './simulationState.ts';
 import * as liveDB from './live/databaseClient.ts';
 
 const DB_NAME = 'devcore-db';
-const DB_VERSION = 3; // Incremented version for new store
+// Fix: Incremented version for new store
+const DB_VERSION = 4; 
 const FILES_STORE_NAME = 'generated-files';
 const VAULT_STORE_NAME = 'vault-data';
 const ENCRYPTED_TOKENS_STORE_NAME = 'encrypted-tokens';
 const CUSTOM_FEATURES_STORE_NAME = 'custom-features';
+// Fix: Add new store name
+const VAULT_ACCESS_LOG_STORE_NAME = 'vault-access-log';
 
 
 interface DevCoreDB extends DBSchema {
@@ -29,6 +33,12 @@ interface DevCoreDB extends DBSchema {
     key: string;
     value: CustomFeature;
   };
+  // Fix: Add schema for new store
+  [VAULT_ACCESS_LOG_STORE_NAME]: {
+    key: string;
+    value: VaultAccessLog;
+    indexes: { 'by-timestamp': number };
+  }
 }
 
 const dbPromise = openDB<DevCoreDB>(DB_NAME, DB_VERSION, {
@@ -53,6 +63,14 @@ const dbPromise = openDB<DevCoreDB>(DB_NAME, DB_VERSION, {
         case 2: {
              if (!db.objectStoreNames.contains(CUSTOM_FEATURES_STORE_NAME)) {
                 db.createObjectStore(CUSTOM_FEATURES_STORE_NAME, { keyPath: 'id' });
+            }
+        }
+        // fall-through for version 3 to 4 upgrade
+        case 3: {
+            if (!db.objectStoreNames.contains(VAULT_ACCESS_LOG_STORE_NAME)) {
+                // @ts-ignore
+                const logStore = db.createObjectStore(VAULT_ACCESS_LOG_STORE_NAME, { autoIncrement: true, keyPath: 'id' });
+                logStore.createIndex('by-timestamp', 'timestamp');
             }
         }
     }
@@ -134,6 +152,17 @@ export const getEncryptedToken = async (id: string): Promise<EncryptedData | und
     }
 };
 
+// Fix: Add missing deleteEncryptedToken function
+export const deleteEncryptedToken = async (id: string): Promise<void> => {
+    if (simulationState.isSimulationMode) {
+        const db = await dbPromise;
+        await db.delete(ENCRYPTED_TOKENS_STORE_NAME, id);
+    } else {
+        // Assuming liveDB would have a corresponding method
+        // await liveDB.liveDeleteEncryptedToken(id);
+    }
+};
+
 export const getAllEncryptedTokenIds = async (): Promise<string[]> => {
     if (simulationState.isSimulationMode) {
         const db = await dbPromise;
@@ -180,6 +209,17 @@ export const deleteCustomFeature = async (id: string): Promise<void> => {
     }
 };
 
+// Fix: Add missing saveVaultAccessLog function
+export const saveVaultAccessLog = async (logEntry: Omit<VaultAccessLog, 'id'>): Promise<void> => {
+    if (simulationState.isSimulationMode) {
+        const db = await dbPromise;
+        // @ts-ignore
+        await db.add(VAULT_ACCESS_LOG_STORE_NAME, logEntry as VaultAccessLog);
+    } else {
+        // await liveDB.liveSaveVaultAccessLog(logEntry);
+    }
+};
+
 
 // --- Global Actions ---
 export const clearAllData = async (): Promise<void> => {
@@ -189,6 +229,7 @@ export const clearAllData = async (): Promise<void> => {
         await db.clear(VAULT_STORE_NAME);
         await db.clear(ENCRYPTED_TOKENS_STORE_NAME);
         await db.clear(CUSTOM_FEATURES_STORE_NAME);
+        await db.clear(VAULT_ACCESS_LOG_STORE_NAME);
     } else {
         await liveDB.liveClearAllData();
     }

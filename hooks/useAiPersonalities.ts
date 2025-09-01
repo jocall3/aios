@@ -71,7 +71,7 @@ export const useEvolvingCognitiveEngram = (): EngramAPI => {
         setEngrams(prev => [...prev, forkedEngram]);
     };
 
-    const fuseEngrams = async (idA: string, idB: string, ratio: number) => {
+    const _fuseEngrams = async (idA: string, idB: string, ratio: number) => {
         const engramA = getEngramById(idA);
         const engramB = getEngramById(idB);
         if (!engramA || !engramB) return;
@@ -79,19 +79,25 @@ export const useEvolvingCognitiveEngram = (): EngramAPI => {
         setIsLoading(true);
         try {
             const fusedEngram = await fuseEngrams(engramA, engramB, ratio);
-            setEngrams(prev => [...prev, fusedEngram]);
+            // Fix: Check if fusedEngram is not void before updating state
+            if (fusedEngram) {
+                setEngrams(prev => [...prev, fusedEngram as CognitiveEngram]);
+            }
         } finally {
             setIsLoading(false);
         }
     };
     
-    const logInteraction = async (engramId: string, input: string, output: string, userFeedback: 'up' | 'down') => {
+    const _logInteraction = async (engramId: string, input: string, output: string, userFeedback: 'up' | 'down') => {
         const sourceEngram = getEngramById(engramId);
         if (!sourceEngram) return;
         
         // Use AI to rewrite the engram based on feedback
         const refined = await refineEngramWithInteraction(sourceEngram, { input, output, userFeedback });
-        setEngrams(prev => prev.map(e => e.id === engramId ? refined : e));
+        // Fix: Check if refined is not void before updating state
+        if (refined) {
+            setEngrams(prev => prev.map(e => e.id === engramId ? refined as CognitiveEngram : e));
+        }
     };
 
     return {
@@ -100,7 +106,7 @@ export const useEvolvingCognitiveEngram = (): EngramAPI => {
         getEngramById,
         createEngram,
         forkEngram,
-        fuseEngrams,
-        logInteraction
+        fuseEngrams: _fuseEngrams,
+        logInteraction: _logInteraction
     };
 };

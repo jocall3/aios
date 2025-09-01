@@ -11,7 +11,7 @@
  * @license SPDX-License-Identifier: Apache-2.0
  */
 
-import type { CitiRequestContext, PaymentContentType } from './types';
+import type { PaymentContentType } from './types';
 
 /**
  * Defines the raw inputs required before header construction.

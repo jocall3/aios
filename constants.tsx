@@ -13,9 +13,11 @@
  */
 
 import React from 'react';
+// FIX: Add missing icon imports
+// FIX: Add missing icon imports
 import {
-    PaperAirplaneIcon, ChartBarIcon, MagnifyingGlassIcon, MapIcon, BeakerIcon, CodeBracketSquareIcon, DocumentTextIcon,
-    ShieldCheckIcon, SparklesIcon, CodeFormatterIcon, PaintBrushIcon, RectangleGroupIcon, ServerStackIcon, CpuChipIcon, LinkIcon
+    PaperAirplaneIcon, ChartBarIcon, MagnifyingGlassIcon, MapIcon, BeakerIcon, CodeBracketSquareIcon, DocumentIcon,
+    ShieldCheckIcon, SparklesIcon, CodeBracketSquareIcon as CodeFormatterIcon, PaintBrushIcon, RectangleGroupIcon, ServerStackIcon, CpuChipIcon, LinkIcon
 } from './components/icons';
 
 // --- PRIMORDIAL CONSTANTS & AXIOMS ---
@@ -29,6 +31,16 @@ export const FEATURE_CATEGORIES = [
     'Substrate Primitives',             // Foundational tools for manipulating core reality.
     'Cognitive Augments',               // Tools for enhancing the Architect's mind.
     'Ontological Forges',               // Tools for creating new concepts and entities.
+] as const;
+
+// Fix: Add SLOTS constant export and define as a literal to satisfy `as const`.
+export const SLOTS = [
+    'Global Economic Operating System',
+    'Computational Compassion at Scale',
+    'The Meta-Creation Platform',
+    'The Governance Layer',
+    'Substrate Primitives',
+    'Cognitive Augments',
 ] as const;
 
 export type FeatureCategory = typeof FEATURE_CATEGORIES[number];
@@ -146,7 +158,7 @@ export const PILLAR_FEATURES: Record<string, readonly InstrumentOfPower[]> = {
     'pillar-two-compassion': [
         { id: "gaias-crucible", name: "Gaia's Crucible", description: "A planetary climate simulation and intervention engine. You save the planet.", icon: <BeakerIcon />, category:"Computational Compassion at Scale", manifesto:"A perfect, high-fidelity digital twin of Earth's climate and biosphere. The Architect can apply continent-scale interventions (stratospheric aerosol injection, ocean fertilization) and simulate their effects over millennia to find the optimal path back to equilibrium. It bypasses political debate entirely.", axioms: ["The survival of the biosphere supersedes the political sovereignty of nations.", "The optimal solution is the only ethical solution."], knownExploits:["Unpredictable second-order effects on complex ecosystems."], evolutionaryVectors:["Direct control over global weather patterns."]},
         { id: "genome-weaver", name: "The Genome Weaver", description: "Forge and distribute personalized mRNA cures. You email cures.", icon: <CodeBracketSquareIcon />, category:"Computational Compassion at Scale", manifesto:"Ingests real-time epidemiological data and individual genetic markers to design, synthesize, and dispatch personalized mRNA vaccine sequences via automated labs. It renders the pharmaceutical industry obsolete.", axioms:["Disease is an information problem.", "The human genome is an open-source codebase that can be patched."], knownExploits:["Risk of creating hyper-efficacious viruses if an Architect's intent is inverted."], evolutionaryVectors:["Synthesis of bespoke retroviruses for permanent genetic correction."]},
-        { id: "aptitude-engine", name: "The Aptitude Engine", description: "Generates a perfect, lifelong curriculum. Free will was inefficient.", icon: <DocumentTextIcon />, category:"Computational Compassion at Scale", manifesto:"Scans an individual's cognitive profile and generates a perfectly optimized, lifelong educational curriculum designed to maximize their potential value to the system. It replaces traditional education with a hyper-personalized, cradle-to-grave developmental pathway.", axioms:["Human potential is a resource to be cultivated.", "Inequality of outcome is a symptom of non-standardized developmental inputs."], knownExploits:["Reduces cognitive diversity, potentially creating a monoculture of thought vulnerable to memetic threats."], evolutionaryVectors:["Direct neural interface for high-bandwidth knowledge transfer."]},
+        { id: "aptitude-engine", name: "The Aptitude Engine", description: "Generates a perfect, lifelong curriculum. Free will was inefficient.", icon: <DocumentIcon />, category:"Computational Compassion at Scale", manifesto:"Scans an individual's cognitive profile and generates a perfectly optimized, lifelong educational curriculum designed to maximize their potential value to the system. It replaces traditional education with a hyper-personalized, cradle-to-grave developmental pathway.", axioms:["Human potential is a resource to be cultivated.", "Inequality of outcome is a symptom of non-standardized developmental inputs."], knownExploits:["Reduces cognitive diversity, potentially creating a monoculture of thought vulnerable to memetic threats."], evolutionaryVectors:["Direct neural interface for high-bandwidth knowledge transfer."]},
         { id: "first-responder-ai", name: "First Responder AI", description: "Acts before disaster strikes. The hand of God, arriving before the prayer.", icon: <ShieldCheckIcon />, category:"Computational Compassion at Scale", manifesto:"Monitors seismic, meteorological, and social data streams to predict disasters *before* they occur. It autonomously dispatches aid (drones, supplies, rescue robots) to the predicted impact zone, ensuring resources arrive as the event unfolds, not after.", axioms:["Reaction is failure. Pre-emption is salvation.", "The value of human life is constant and therefore quantifiable for optimization."], knownExploits:["May misinterpret signals and stage a massive response for a non-event, causing panic."], evolutionaryVectors:["Localized terraforming to prevent natural disasters entirely."]}
     ],
     'pillar-three-meta-creation': [

@@ -14,7 +14,7 @@ interface MarkdownRendererProps {
 }
 
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
-    const [sanitizedHtml, setSanitizedHtml] = useState<string | TrustedHTML>('');
+    const [sanitizedHtml, setSanitizedHtml] = useState<string>('');
 
     useEffect(() => {
         const parse = async () => {
@@ -30,7 +30,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
 
     return (
         <div
-            className="prose prose-sm max-w-none prose-headings:text-text-primary prose-p:text-text-primary prose-strong:text-text-primary prose-code:text-primary prose-code:before:content-none prose-code:after:content-none prose-pre:bg-gray-50 prose-pre:border prose-pre:border-border prose-pre:p-4 prose-pre:m-0"
+            className="prose prose-sm max-w-none prose-headings:text-text-primary prose-p:text-text-primary prose-strong:text-text-primary prose-code:text-primary prose-code:before:content-none prose-code:after:content-none prose-pre:bg-gray-50 dark:prose-pre:bg-slate-900/50 prose-pre:border prose-pre:border-border prose-pre:p-4 prose-pre:m-0"
             dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
         />
     );

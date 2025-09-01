@@ -26,6 +26,17 @@ const IV_LENGTH_BYTES = 12;
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
 
+// Fix: Add missing utility function.
+const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return window.btoa(binary);
+};
+
 export const deriveKey = async (password: string, salt: ArrayBuffer): Promise<CryptoKey> => {
     const masterKey = await crypto.subtle.importKey('raw',textEncoder.encode(password),{ name: PBKDF2_ALGORITHM },false,['deriveKey']);
     return await crypto.subtle.deriveKey({ name: PBKDF2_ALGORITHM, salt, iterations: PBKDF2_ITERATIONS, hash: PBKDF2_HASH, }, masterKey, { name: KEY_ALGORITHM, length: KEY_LENGTH }, true, ['encrypt', 'decrypt']);
@@ -150,6 +161,7 @@ export const generateProofOfKnowledge = async (secret: string): Promise<ZeroKnow
 
     return {
         proof: proofBuffer,
+        // Fix: Call the arrayBufferToBase64 function.
         publicInputs: [arrayBufferToBase64(salt)], // The public input is the salt
     };
 };
@@ -170,5 +182,6 @@ export const verifyProofOfKnowledge = async (secret: string, proof: ZeroKnowledg
     
     const expectedProof = await crypto.subtle.digest('SHA-256', combined);
 
+    // Fix: Call the arrayBufferToBase64 function.
     return arrayBufferToBase64(proof.proof) === arrayBufferToBase64(expectedProof);
 };
