@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import { openDB, DBSchema } from 'idb';
 import type { GeneratedFile, EncryptedData, CustomFeature, VaultAccessLog } from '../types.ts';
 // Fix: Import from the monolithic index to avoid circular dependency and find the correct export.

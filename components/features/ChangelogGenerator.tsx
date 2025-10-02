@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useMemo } from 'react';
 import { analyzeGitArchaeology } from '../../services/GitCognitionAI'; // Invented, advanced service
 import type { GitArchaeologyReport } from '../../types/GitCognition'; // Invented, structured type

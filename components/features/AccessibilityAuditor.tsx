@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useRef, useCallback } from 'react';
 import { forgeUiPatchFromDom, runPerceptionAgent } from '../../services/AIVisionCognition'; // Invented ultra-capable service
 import type { PerceptionScanResult, ReforgedUIPayload } from '../../types/AIVisionCognition'; // Invented types

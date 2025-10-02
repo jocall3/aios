@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useMemo } from 'react';
 import { synthesizeExploitSuite } from '../../services/FaultInjectionAI'; // Invented, powerful service
 import type { ExploitSuite, ExploitVector } from '../../types/FaultInjection'; // Invented types

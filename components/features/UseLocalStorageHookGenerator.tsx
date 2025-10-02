@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { synthesizeHook, transpileAST } from '../../services/MetaprogrammingAI'; // Invented, powerful service
 import type { HookBlueprint, AbstractSyntaxTree } from '../../types/Metaprogramming'; // Invented types

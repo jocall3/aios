@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import type { CustomFeature } from '../../types';
 import { modelThreatSurface, predictiveTrace } from '../../services'; // Using the monolithic index

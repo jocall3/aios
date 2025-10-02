@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import * as vaultService from './vaultService.ts';
 import { logError, logEvent } from './telemetryService.ts';
 import { getDecryptedCredential } from './vaultService.ts';

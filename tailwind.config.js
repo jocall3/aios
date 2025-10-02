@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import typography from '@tailwindcss/typography';
 
 /** @type {import('tailwindcss').Config} */

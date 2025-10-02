@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useNotification } from '../../contexts/NotificationContext';
 import { generateUIVariantsForGoal } from '../../services/ConversionWarfareAI'; // Invented, advanced service

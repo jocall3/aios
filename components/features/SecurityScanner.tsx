@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState } from 'react';
 import { analyzeCodeForVulnerabilities } from '../../services/aiService.ts';
 import { runStaticScan, SecurityIssue } from '../../services/security/staticAnalysisService.ts';

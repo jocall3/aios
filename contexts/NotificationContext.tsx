@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { createContext, useContext, useState, useCallback } from 'react';
 
 type NotificationType = 'success' | 'error' | 'info';

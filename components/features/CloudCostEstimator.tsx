@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useMemo } from 'react';
 import { estimateCloudCost, synthesizeCostOptimizationPathway } from '../../services/aiService'; // Synthesize function is new but assumed in the existing service file
 import { GcpIcon, SparklesIcon, ChartBarIcon } from '../icons';

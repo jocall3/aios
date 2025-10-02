@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 
 // Fix: Changed to type-only import and corrected path
 import type { GlobalState } from '../contexts/GlobalStateContext';

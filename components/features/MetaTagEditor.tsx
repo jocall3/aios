@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useMemo } from 'react';
 import { liveReconMetadata, forgeOptimalPayloads } from '../../services/MemeticWarfareAI'; // Invented AI Service
 import type { MetadataPayload, SocialPrediction } from '../../types/MemeticWarfare'; // Invented

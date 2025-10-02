@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback } from 'react';
 import { synthesizeStrategy } from '../../services/EnterpriseCognitionAI'; // Invented AI Service
 import type { EnterpriseSignalReport, StrategicMandate } from '../../types/EnterpriseCognition'; // Invented

@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useMemo } from 'react';
 import { executeAndProfileGraphqlQuery, synthesizeDataloader } from '../../services/GraphQLExecutionAI'; // Invented AI Service
 import type { QueryProfile, ResolverTrace, DataLoaderPatch } from '../../types/GraphQLExecution'; // Invented

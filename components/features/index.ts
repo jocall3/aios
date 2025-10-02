@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { lazy } from 'react';
 import { RAW_FEATURES, PILLAR_FEATURES } from '../../constants';
 import type { Feature, CustomFeature, ViewType, NoeticVector } from '../../types';

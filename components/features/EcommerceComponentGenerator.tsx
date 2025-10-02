@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useEffect, useReducer } from 'react';
 import { generateEcommerceFunnel } from '../../services/ConversionFunnelAI'; // Invented AI Service
 import { ArchiveBoxIcon, CurrencyDollarIcon } from '../icons';

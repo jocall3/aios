@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback } from 'react';
 import { analyzePerformanceTrace } from '../../services/index.ts';
 import { startTracing, stopTracing, TraceEntry } from '../../services/profiling/performanceService.ts';

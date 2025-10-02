@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { instrumentForHeapAnalysis, analyzeHeapRetainers } from '../../services/MemoryForensicsAI'; // Invented AI Service

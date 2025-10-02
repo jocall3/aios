@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 // Fix: Changed IDBDatabase to IDBPDatabase for generic type support
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 import type { ChrononTimestamp, CognitiveSignature, SystemEntropyState } from '../types';

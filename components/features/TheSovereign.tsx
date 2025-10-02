@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useReducer, useEffect } from 'react';
 import { useNotification } from '../../contexts/NotificationContext';
 import { ai_synthesizeOpenApiSpec, ai_forgeServiceFilesFromSpec } from '../../services/TheSovereignAI'; // Assumed AI service exists with these methods

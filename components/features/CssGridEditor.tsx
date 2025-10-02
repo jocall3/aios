@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { synthesizeGridLayout } from '../../services/LayoutCognitionAI'; // Invented AI Service
 import type { LayoutAxiom, ContentItem, GridLayoutSolution } from '../../types/LayoutCognition'; // Invented

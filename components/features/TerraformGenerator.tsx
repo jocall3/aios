@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useMemo } from 'react';
 import { ingestCloudState, generateContextAwareTerraform, simulateTerraformPlan } from '../../services/TerraformOracleAI'; // Invented
 import type { CloudState, TerraformPlan } from '../../types/TerraformOracle'; // Invented

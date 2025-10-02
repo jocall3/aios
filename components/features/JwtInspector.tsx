@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { LockClosedIcon, ShieldCheckIcon, ShieldExclamationIcon } from '../icons';
 import { useNotification } from '../../contexts/NotificationContext';

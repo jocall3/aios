@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback } from 'react';
 import { validateAndTranspileFinancialJson } from '../../services/GeosIngestionAI'; // Invented, advanced service
 import type { FinancialIngestionReport } from '../../types/GeosIngestion'; // Invented, structured type

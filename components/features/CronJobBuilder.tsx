@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useGlobalState } from '../../contexts/GlobalStateContext';
 import { getDecryptedCredential, initializeOctokit, getFileContent, commitFiles } from '../../services'; // Using monolithic index

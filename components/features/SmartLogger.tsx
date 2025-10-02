@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { instrumentAndRunCode } from '../../services/ExecutionTracerAI'; // Invented, powerful AI service
 import type { TraceEvent } from '../../types/ExecutionTracer'; // Invented

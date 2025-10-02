@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { generateAdeptProtocol } from '../../services/AdeptProtocolAI'; // An invented, much more powerful service
 import type { AdeptProtocol } from '../../types/AdeptProtocol'; // Invented, structured type

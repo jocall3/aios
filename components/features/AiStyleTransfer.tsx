@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useMemo } from 'react';
 import * as Diff from 'diff';
 import { realignCodeIdeology } from '../../services/IdeologicalComputationAI'; // Invented, superior service

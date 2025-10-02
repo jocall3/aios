@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useMemo, Suspense } from 'react';
 import { performSerpSweep } from '../../services/SerpWarfareAI'; // Invented AI Service
 import type { SerpSweepReport, CompetitorAnalysis } from '../../types/SerpWarfing'; // Invented types

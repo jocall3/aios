@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useMemo } from 'react';
 import { synthesizeLocalizationPackage } from '../../services/GeolinguisticAI'; // Invented
 import type { LocalizationPackage, CulturalAnalysis } from '../../types/Geolinguistic'; // Invented

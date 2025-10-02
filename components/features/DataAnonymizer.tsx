@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useMemo } from 'react';
 import { piiRecognition, runKAnonymityEngine } from '../../services/AnonymityAI'; // Invented AI Service
 import type { PiiField, AnonymityReport } from '../../types/Anonymity'; // Invented

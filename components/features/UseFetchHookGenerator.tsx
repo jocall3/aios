@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { synthesizeFormFromSchema } from '../../services/FormOntologyAI'; // Invented AI service
 import type { SynthesizedForm } from '../../types/FormOntology'; // Invented types

@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useRef } from 'react';
 import { decomposeUserFlowAndGeneratePrototype, generateComponentFromHtml } from '../../services/InteractiveFlowAI'; // Invented AI Service
 import type { InteractivePrototype } from '../../types/InteractiveFlow'; // Invented

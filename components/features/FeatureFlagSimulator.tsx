@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { getFlagConfiguration, updateFlagConfiguration } from '../../services/FeatureFlaggingService'; // Invented, but real
 import type { FeatureFlag, FlagTargetingRule } from '../../types/FeatureFlagging'; // Invented

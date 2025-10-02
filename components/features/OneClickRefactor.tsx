@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback } from 'react';
 import * as Diff from 'diff';
 import { refactorForPerformance, refactorForReadability, generateJsDoc, convertToFunctionalComponent } from '../../services/aiService.ts';

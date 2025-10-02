@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback } from 'react';
 import { HexColorPicker } from 'react-colorful';
 import { generateColorPalette, downloadFile } from '../../services/index.ts';

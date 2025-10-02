@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import { useState, useCallback, useEffect, useRef } from 'react';
 
 // --- In-Memory Cache for fast, repeated access ---

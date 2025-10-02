@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useGlobalState } from '../../contexts/GlobalStateContext';
 import { getFileHistory, analyzeSemanticDrift } from '../../services/CodeOntologyAI'; // Invented

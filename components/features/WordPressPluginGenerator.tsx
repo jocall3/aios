@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useMemo, Suspense } from 'react';
 import { Canvas } from '@react-three-fiber';
 import { Stars, Line } from '@react-three/drei';

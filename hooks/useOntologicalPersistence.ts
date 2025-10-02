@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import { useState, useCallback, useEffect } from 'react';
 import { migrateDataSchema } from '../services/SchemaMigrationAI'; // Invented AI Service
 import { db_readHistory, db_writeHistory, db_revertToTimestamp } from '../services/PalimpsestArchive'; // Invented DB Service

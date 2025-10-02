@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { generateAppFeatureComponent } from '../../services/aiService.ts';
 import { getAllCustomFeatures, saveCustomFeature, deleteCustomFeature } from '../../services/dbService.ts';

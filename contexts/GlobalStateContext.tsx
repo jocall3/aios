@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { createContext, useReducer, useContext, useEffect } from 'react';
 import type { ViewType, AppUser, GitHubUser, FileNode } from '../types.ts';
 import { simulationState } from '../services/simulationState.ts';

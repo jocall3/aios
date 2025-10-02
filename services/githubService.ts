@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import type { Octokit } from 'octokit';
 import type { Repo, FileNode } from '../types.ts';
 import { logEvent, logError, measurePerformance } from './telemetryService.ts';

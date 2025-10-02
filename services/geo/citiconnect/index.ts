@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import { getDecryptedCredential } from '../../index';
 import type { CitiConnectEnvironment, FICCancellationRequest, FIReconfirmationRequest, PaymentsRequest, PaymentsResponse, FIResponse } from './types';
 import { buildRequestContextHeaders } from './gatewayscript';

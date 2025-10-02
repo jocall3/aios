@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { synthesizePacingHook } from '../../services/TemporalWeaverAI'; // Invented AI Service
 import type { PacingStrategyBlueprint } from '../../types/TemporalWeaver'; // Invented Types

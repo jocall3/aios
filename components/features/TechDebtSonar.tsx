@@ -1,3 +1,6 @@
+// Copyright James Burvel O’Callaghan III
+// President Citibank Demo Business Inc.
+
 import React, { useState, useCallback } from 'react';
 import { detectCodeSmells } from '../../services/aiService.ts';
 import type { CodeSmell } from '../../types.ts';
